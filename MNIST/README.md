@@ -14,3 +14,5 @@ https://www.cnblogs.com/guoyaohua/p/8724433.html
 
 
 relu的主要作用还是减轻梯度爆炸的可能性
+
+隐藏层个数
