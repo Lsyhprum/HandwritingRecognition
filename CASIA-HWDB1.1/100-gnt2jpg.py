@@ -10,7 +10,9 @@ TEST_DATA_PATH="G:/Dataset/CASIA-HWDB/HWDB1.1 gnt/HWDB1.1tst_gnt"
 TRAIN_IMG_PATH="G:/Dataset/CASIA-HWDB/HWDB1.1 img/train"                  
 TEST_IMG_PATH="G:/Dataset/CASIA-HWDB/HWDB1.1 img/test"   
 
-TARGET_CHARACTERS = ['杭', '州', '电', '子', '科', '技', '大', '学', '中', '北']
+TEMP_PATH = "H:/test/HandwritingRecognition/CASIA-HWDB/HWDB1.1_data/HWDB1.1tst_img"
+
+TARGET_CHARACTERS = []
 
 class Reader:
     def load_gnt_file(self, filename):
@@ -37,27 +39,20 @@ class Reader:
 
     def read_gnt_image(self, gnt_path):
         data = self.load_gnt_file(gnt_path)
-        data_list = []
+        data_list = []       
+
         while True:
             try:
                 image, label = next(data)
                 image = image.resize((32, 32))  # 图像缩放
-                #image = PIL.ImageOps.invert(image)  # 图像反色，根据自己的需求修改
+                #image = PIL.ImageOps.invert(image)  # 图像反色
+
                 if label in TARGET_CHARACTERS:
                     data_list.append((image, label))
             except StopIteration:
                 break
+           
         return data_list
-
-    def save_label(self, path):
-        files=os.listdir(path)
-        f=open(path + "/label.txt","w") #创建用于训练的标签文件
-
-        for file in files:
-            files_d=os.listdir(path+"/"+file)
-            for file1 in files_d:
-                f.write(file + "/" + file1 + " " + file + "\n")
-
 
     def save_gnt_image(self, gnt_path, save_path):
         """
@@ -76,27 +71,23 @@ class Reader:
             d[0].save(save_path + "/" + d[1] + "/" + str(num) + ".jpg")
             print('save jpg: tag %s gnt_id: %s' % (d[1], str(num)))
 
+
+# 选取数据集
+for i, file in enumerate(os.listdir(TEMP_PATH)):
+    if i < 100:
+        print(file)
+        TARGET_CHARACTERS.append(file)
+    else:
+        break
+
 reader = Reader()
-reader.save_gnt_image(TEST_DATA_PATH + "/1241-c.gnt", TEST_IMG_PATH)
-reader.save_gnt_image(TRAIN_DATA_PATH + "/1240-c.gnt", TRAIN_IMG_PATH)
-reader.save_label(TEST_IMG_PATH)
-reader.save_label(TRAIN_IMG_PATH)
 
+files = os.listdir(TEST_DATA_PATH)
+for file in files:
+    reader.save_gnt_image(TEST_DATA_PATH + "/" + file, TEST_IMG_PATH)
 
-
-
-
-
-
-
-
-
-
-
-
-
-#data = reader.read_gnt_image(TEST_DATA_PATH + "/1241-c.gnt")
-
-#data[0][0].save(TEST_IMG_PATH + "/" + "test" + ".jpg", 'jpeg')
+files = os.listdir(TRAIN_DATA_PATH)
+for file in files:
+    reader.save_gnt_image(TRAIN_DATA_PATH + "/" + file, TRAIN_IMG_PATH)
 
 
