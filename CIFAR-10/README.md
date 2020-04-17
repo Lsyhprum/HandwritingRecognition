@@ -13,3 +13,10 @@ stride
 padding=1
 
 输出形状 print(x.size())
+
+
+ResNet https://blog.csdn.net/sunqiande88/article/details/80100891
+
+https://blog.csdn.net/winycg/article/details/86709991
+
+降采样 max_pool / conv stride = 2
