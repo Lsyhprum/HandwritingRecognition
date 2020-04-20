@@ -20,3 +20,10 @@ ResNet https://blog.csdn.net/sunqiande88/article/details/80100891
 https://blog.csdn.net/winycg/article/details/86709991
 
 降采样 max_pool / conv stride = 2
+
+
+MobileNet
+
+https://www.bilibili.com/video/BV1RJ411d7sF?from=search&seid=3184848541177549540
+
+https://blog.csdn.net/winycg/article/details/86662347
