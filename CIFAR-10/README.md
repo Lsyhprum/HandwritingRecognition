@@ -27,3 +27,9 @@ MobileNet
 https://www.bilibili.com/video/BV1RJ411d7sF?from=search&seid=3184848541177549540
 
 https://blog.csdn.net/winycg/article/details/86662347
+
+
+
+
+
+训练集 loss 下降明显 验证集不下降   数据集有问题

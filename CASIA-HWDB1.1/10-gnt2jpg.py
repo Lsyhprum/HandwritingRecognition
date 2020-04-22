@@ -3,16 +3,40 @@ import re
 import struct
 import numpy as np
 from PIL import Image
-from codecs import decode
+from codecs import decode 
 
-TRAIN_DATA_PATH="G:/Dataset/CASIA-HWDB/HWDB1.1 gnt/HWDB1.1trn_gnt"       
-TEST_DATA_PATH="G:/Dataset/CASIA-HWDB/HWDB1.1 gnt/HWDB1.1tst_gnt"          
-TRAIN_IMG_PATH="G:/Dataset/CASIA-HWDB/HWDB1.1 img/train"                  
-TEST_IMG_PATH="G:/Dataset/CASIA-HWDB/HWDB1.1 img/test"   
-
-TARGET_CHARACTERS = ['杭', '州', '电', '子', '科', '技', '大', '学', '中', '北']
 
 class Reader:
+    
+    def __init__(self, target):
+        ROOT = "G:/Dataset/CASIA-HWDB"
+
+        self._target = target
+        
+        self.train_gnt = ROOT + "/gnt1.1/trn_gnt"
+        self.test_gnt = ROOT + "/gnt1.1/tst_gnt"
+        self.train_path = ROOT + "/HWDB-10/train"
+        self.test_path = ROOT + "/HWDB-10/test"
+
+    def get_dataset_info(self):
+        cnt = 0
+        files = os.listdir(self.train_path)
+        for file in files:
+            pics = os.listdir(self.train_path + "/" + file)
+            cnt += len(pics)
+            print("%s : %d" %(file, len(pics)))
+
+        # train set 2400
+        print("total train set: %d" % cnt)
+        
+        cnt = 0
+        files = os.listdir(self.test_path)
+        for file in files:
+            pics = os.listdir(self.test_path + "/" + file)
+            print("%s : %d" %(file, len(pics)))
+        # test set 600
+        print("total test set: %d" % cnt)
+
     def load_gnt_file(self, filename):
         """
         Load characters and images from a given GNT file.
@@ -25,7 +49,7 @@ class Reader:
                 packed_length = f.read(4)
                 if packed_length == b'':
                     break
-                length = struct.unpack("<I", packed_length)[0]
+                #length = struct.unpack("<I", packed_length)[0]
                 raw_label = struct.unpack(">cc", f.read(2))
                 width = struct.unpack("<H", f.read(2))[0]
                 height = struct.unpack("<H", f.read(2))[0]
@@ -43,24 +67,13 @@ class Reader:
             try:
                 image, label = next(data)
                 image = image.resize((32, 32))  # 图像缩放
-                #image = PIL.ImageOps.invert(image)  # 图像反色
 
-                if label in TARGET_CHARACTERS:
+                if label in self._target:
                     data_list.append((image, label))
             except StopIteration:
                 break
            
         return data_list
-
-    def save_label(self, path):
-        files=os.listdir(path)
-        f=open(path + "/label.txt","w") #创建用于训练的标签文件
-
-        for file in files:
-            files_d=os.listdir(path+"/"+file)
-            for file1 in files_d:
-                f.write(file + "/" + file1 + " " + file + "\n")
-
 
     def save_gnt_image(self, gnt_path, save_path):
         """
@@ -79,17 +92,19 @@ class Reader:
             d[0].save(save_path + "/" + d[1] + "/" + str(num) + ".jpg")
             print('save jpg: tag %s gnt_id: %s' % (d[1], str(num)))
 
-reader = Reader()
+    def generate_dataset(self):
+        files = os.listdir(self.train_gnt)
+        for file in files:
+            reader.save_gnt_image(self.train_gnt + "/" + file, self.train_path)
 
-files = os.listdir(TEST_DATA_PATH)
-for file in files:
-    reader.save_gnt_image(TEST_DATA_PATH + "/" + file, TEST_IMG_PATH)
+        files = os.listdir(self.test_gnt)
+        for file in files:
+            reader.save_gnt_image(self.test_gnt + "/" + file, self.test_path)
 
-files = os.listdir(TRAIN_DATA_PATH)
-for file in files:
-    reader.save_gnt_image(TRAIN_DATA_PATH + "/" + file, TRAIN_IMG_PATH)
+TARGET_CHARACTERS = ['杭', '州', '电', '子', '科', '技', '大', '学', '中', '北']
 
-reader.save_label(TEST_IMG_PATH)
-reader.save_label(TRAIN_IMG_PATH)
+reader = Reader(TARGET_CHARACTERS)
 
+#reader.generate_dataset()
 
+reader.get_dataset_info()
